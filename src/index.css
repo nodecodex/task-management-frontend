@@ -1,0 +1,261 @@
+/* Use Inter font and remove extra fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@import "tailwindcss";
+
+/* Map Tailwind's dark: variant to the project's .dark-mode body class */
+@custom-variant dark (.dark-mode &);
+
+:root {
+  --bs-body-font-family: 'Inter', sans-serif !important;
+}
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-light-100: #ebeef2;
+  --color-light-200: #e5e9f2;
+  --color-light-300: #dbdfea;
+  --color-light-400: #b7c2d0;
+  --color-light-500: #8091a7;
+  --color-light-600: #3c4d62;
+  --color-light-700: #344357;
+  --color-light-800: #2b3748;
+  --color-light-900: #1f2b3a;
+  --color-lighter: #f5f6fa;
+  --color-darker: #101924;
+  --color-red: #e85347;
+  --color-yellow: #f4bd0e;
+  --color-green: #1ee0ac;
+  --color-cyan: #09c2de;
+  --color-blue: #559bfb;
+  --color-azure: #1676fb;
+  --color-indigo: #2c3782;
+  --color-purple: #816bff;
+  --color-pink: #ff63a5;
+  --color-orange: #ffa353;
+  --color-teal: #20c997;
+  --color-base-100: #ecf2ff;
+  --color-base-200: #dfe9fe;
+  --color-base-300: #b6c6e3;
+  --color-base-400: #8094ae;
+  --color-base-500: #526484;
+  --color-base-color: #364a63;
+  --color-base-dark: #1c2b46;
+  --color-accent-100: #eff1ff;
+  --color-accent-200: #e3e7fe;
+  --color-accent-300: #c4cefe;
+  --color-accent-400: #9cabff;
+  --color-accent-500: #798bff;
+  --color-accent-color: #6576ff;
+  --color-accent-dark: #2c3782;
+  --color-accent-dim: #e3e7fe;
+  --color-brand-color-bitcoin: #f9841e;
+  --color-brand-color-ethereum: #6174b9;
+  --color-brand-color-facebook: #3b5998;
+  --color-brand-color-google: #de5246;
+  --color-extend-mix: #fff;
+  --color-mark-bg: #fcf8e3;
+}
+
+/* React DatePicker Custom Styles */
+.react-datepicker-wrapper {
+  width: 100% !important;
+  display: block !important;
+}
+
+.task-datepicker-popper,
+.react-datepicker-popper {
+  z-index: 1070 !important;
+}
+
+.react-datepicker {
+  font-family: 'Inter', sans-serif !important;
+  border: 1px solid #dbdfea !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+  background-color: #ffffff !important;
+  padding: 6px !important;
+}
+
+.react-datepicker__header {
+  background-color: #f5f6fa !important;
+  border-bottom: 1px solid #dbdfea !important;
+  border-top-left-radius: 6px !important;
+  border-top-right-radius: 6px !important;
+  padding: 8px 0 !important;
+}
+
+.react-datepicker__current-month {
+  font-weight: 600 !important;
+  color: #364a63 !important;
+  font-size: 14px !important;
+  margin-bottom: 6px !important;
+}
+
+.react-datepicker__day-name {
+  color: #8094ae !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  width: 2rem !important;
+  line-height: 2rem !important;
+}
+
+.react-datepicker__day {
+  color: #364a63 !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  width: 2rem !important;
+  line-height: 2rem !important;
+  margin: 1px !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: #e5e9f2 !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #6576ff !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__day--today {
+  font-weight: 700 !important;
+  color: #6576ff !important;
+}
+
+.react-datepicker__day--today.react-datepicker__day--selected {
+  color: #ffffff !important;
+}
+
+.react-datepicker__navigation {
+  top: 10px !important;
+}
+
+/* Task Detail Modal Custom Styles */
+.task-detail-modal-custom .modal-dialog {
+  max-width: 1040px !important;
+}
+
+.task-detail-modal-custom .modal-content {
+  border-radius: 16px !important;
+  border: 1px solid #dbdfea !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 60px rgba(31, 43, 58, 0.25) !important;
+}
+
+.dark-mode .task-detail-modal-custom .modal-content {
+  border-color: #1f2b3a !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Dark Mode base fallback for Task Detail Modal (now mostly handled by dark: Tailwind variant) */
+.dark-mode .task-detail-modal-content {
+  background-color: #141d2b !important;
+  color: #e5e9f2 !important;
+}
+
+/* ==========================================================================
+   Kanban Board Custom Scrollbar (SaaS / Jira / Linear style)
+   ========================================================================== */
+
+/* Firefox support */
+.kanban-container {
+  scrollbar-width: thin;
+  scrollbar-color: #b7c2d0 transparent;
+}
+
+.dark-mode .kanban-container {
+  scrollbar-color: #3c4d62 transparent;
+}
+
+.kanban-drag {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark-mode .kanban-drag {
+  scrollbar-color: #334155 transparent;
+}
+
+/* Chrome, Edge, Safari WebKit support for Horizontal Kanban Container */
+.kanban-container::-webkit-scrollbar {
+  height: 7px;
+  width: 7px;
+}
+
+.kanban-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 9999px;
+  margin: 0 14px;
+}
+
+.dark-mode .kanban-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.kanban-container::-webkit-scrollbar-thumb {
+  background-color: #b7c2d0;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.kanban-container::-webkit-scrollbar-thumb:hover {
+  background-color: #8091a7;
+}
+
+.dark-mode .kanban-container::-webkit-scrollbar-thumb {
+  background-color: #3c4d62;
+}
+
+.dark-mode .kanban-container::-webkit-scrollbar-thumb:hover {
+  background-color: #526484;
+}
+
+.kanban-container::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.kanban-container::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* WebKit support for Vertical Column Scrollbars (.kanban-drag) */
+.kanban-drag::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.kanban-drag::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.kanban-drag::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+.kanban-drag::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.dark-mode .kanban-drag::-webkit-scrollbar-thumb {
+  background-color: #334155;
+}
+
+.dark-mode .kanban-drag::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
+}
+
+.kanban-drag::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
