@@ -112,6 +112,8 @@ export const normalizeTask = (task) => {
     status: (task.status || 'TODO').toUpperCase(),
     boardId: task.boardId || task.board_id || '',
     boardTitle: task.board?.title || '',
+    createdById: task.createdById || task.createdBy?.id || task.userId || task.authorId || task.creatorId || task.creator?.id || '',
+    createdBy: task.createdBy || task.creator || null,
     meta: {
       users,
       tags,

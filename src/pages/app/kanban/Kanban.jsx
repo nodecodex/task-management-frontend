@@ -42,7 +42,10 @@ import BoardForm from "./partials/BoardForm";
 import TaskForm from "./partials/TaskForm";
 import TaskDetailModal from "./partials/TaskDetailModal";
 import TaskList from "./partials/TaskList";
+import DeleteConfirmationModal from "./partials/DeleteConfirmationModal";
 import { useTaskContext } from "@/layout/provider/TaskContext";
+import { useAuth } from "@/context/AuthContext";
+import { canDeleteTask } from "@/utils/Utils";
 import { PRIORITY_OPTIONS } from "@/utils/constants";
 import { toast } from "react-toastify";
 
@@ -132,7 +135,11 @@ const Kanban = () => {
   const [detailModal, setDetailModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [targetColumnStatus, setTargetColumnStatus] = useState("TODO");
+  const [deleteTaskModal, setDeleteTaskModal] = useState({ isOpen: false, task: null, loading: false });
+  const [deleteBoardModal, setDeleteBoardModal] = useState({ isOpen: false, loading: false });
+  const [dragOriginColumnId, setDragOriginColumnId] = useState(null);
 
+  const { user: currentUser } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const searchTimerRef = useRef(null);
 
@@ -253,63 +260,90 @@ const Kanban = () => {
     }
   };
 
+  const handleDragStart = (event) => {
+    const { active } = event;
+    const activeId = String(active.id);
+    const originCol = findColumn(activeId);
+    setDragOriginColumnId(originCol ? originCol.id : null);
+  };
+
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     const activeId = String(active.id);
-    const overId = over ? String(over.id) : null;
+    const startColId = dragOriginColumnId;
 
-    const activeColumn = findColumn(activeId);
-    const overColumn = findColumn(overId);
+    setDragOriginColumnId(null);
 
-    if (!activeColumn || !overColumn) {
-      return null;
-    }
+    if (!over) return;
+    const overId = String(over.id);
 
-    const activeIndex = activeColumn.items.findIndex((i) => i.id === activeId);
-    const overIndex = overColumn.items.findIndex((i) => i.id === overId);
+    const destColumn = findColumn(overId);
+    if (!destColumn) return;
 
-    if (activeColumn.id === overColumn.id) {
-      if (activeIndex !== overIndex && activeIndex !== -1 && overIndex !== -1) {
-        setColumns((prevState) => {
-          return prevState.map((column) => {
-            if (column.id === activeColumn.id) {
+    const destColId = destColumn.id;
+    const overIndex = destColumn.items.findIndex((i) => i.id === overId);
+
+    if (startColId && destColId && startColId !== destColId) {
+      // Dynamic real-time backend update
+      try {
+        await moveTaskStatus(activeId, startColId, destColId, overIndex >= 0 ? overIndex : undefined);
+      } catch (err) {
+        toast.error(err.message || "Failed to update task status in backend");
+      }
+    } else if (destColId) {
+      const activeIndex = destColumn.items.findIndex((i) => i.id === activeId);
+      if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex) {
+        setColumns((prevState) =>
+          prevState.map((column) => {
+            if (column.id === destColId) {
               return {
                 ...column,
                 items: arrayMove(column.items, activeIndex, overIndex),
               };
             }
             return column;
-          });
-        });
-      }
-    } else {
-      // Moved to different column
-      try {
-        await moveTaskStatus(activeId, activeColumn.id, overColumn.id, overIndex);
-      } catch (err) {
-        toast.error(err.message || "Failed to persist task position");
+          })
+        );
       }
     }
   };
 
-  const handleDeleteBoard = async () => {
+  const confirmDeleteBoard = async () => {
     if (!activeBoard?.id) return;
-    if (!window.confirm(`Are you sure you want to delete board "${activeBoard.title}"?`)) return;
+    setDeleteBoardModal((prev) => ({ ...prev, loading: true }));
     try {
       await deleteBoard(activeBoard.id);
       toast.success("Board deleted successfully");
+      setDeleteBoardModal({ isOpen: false, loading: false });
     } catch (err) {
       toast.error(err.message || "Failed to delete board");
+      setDeleteBoardModal((prev) => ({ ...prev, loading: false }));
     }
   };
 
-  const handleDeleteTask = async (taskId) => {
-    if (!window.confirm("Are you sure you want to delete this task?")) return;
+  const promptDeleteTask = (task) => {
+    if (!canDeleteTask(currentUser, task)) {
+      toast.error("You can only delete tasks created by you");
+      return;
+    }
+    setDeleteTaskModal({ isOpen: true, task, loading: false });
+  };
+
+  const confirmDeleteTask = async () => {
+    if (!deleteTaskModal.task?.id) return;
+    if (!canDeleteTask(currentUser, deleteTaskModal.task)) {
+      toast.error("You can only delete tasks created by you");
+      setDeleteTaskModal({ isOpen: false, task: null, loading: false });
+      return;
+    }
+    setDeleteTaskModal((prev) => ({ ...prev, loading: true }));
     try {
-      await deleteTask(taskId);
+      await deleteTask(deleteTaskModal.task.id);
       toast.success("Task deleted successfully");
+      setDeleteTaskModal({ isOpen: false, task: null, loading: false });
     } catch (err) {
       toast.error(err.message || "Failed to delete task");
+      setDeleteTaskModal((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -505,6 +539,7 @@ const Kanban = () => {
                 <DndContext
                   sensors={sensors}
                   collisionDetection={pointerWithin}
+                  onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   onDragOver={handleDragOver}
                 >
@@ -534,54 +569,57 @@ const Kanban = () => {
                                   >
                                     <Icon name="more-h" />
                                   </DropdownToggle>
-                                  <DropdownMenu end>
-                                    <ul className="link-list-opt no-bdr">
-                                      {activeBoard && (
-                                        <>
-                                          <li>
-                                            <DropdownItem
-                                              tag="a"
-                                              href="#edit-board"
-                                              onClick={(ev) => {
-                                                ev.preventDefault();
-                                                setEditBoardModal(true);
-                                              }}
-                                            >
-                                              <Icon name="edit" />
-                                              <span>Edit Board</span>
-                                            </DropdownItem>
-                                          </li>
-                                          <li>
-                                            <DropdownItem
-                                              tag="a"
-                                              href="#delete-board"
-                                              onClick={(ev) => {
-                                                ev.preventDefault();
-                                                handleDeleteBoard();
-                                              }}
-                                            >
-                                              <Icon name="trash" />
-                                              <span>Delete Board</span>
-                                            </DropdownItem>
-                                          </li>
-                                        </>
-                                      )}
-                                      <li>
+                                  <DropdownMenu end className="kanban-floating-dropdown">
+                                    <div className="kanban-dropdown-header">Column Actions</div>
+                                    {activeBoard && (
+                                      <>
                                         <DropdownItem
                                           tag="a"
-                                          href="#add-task"
+                                          href="#edit-board"
+                                          className="kanban-menu-item"
                                           onClick={(ev) => {
                                             ev.preventDefault();
-                                            setTargetColumnStatus(column.id);
-                                            setSelectedTask(null);
-                                            setAddTaskModal(true);
+                                            setEditBoardModal(true);
                                           }}
                                         >
-                                          <Icon name="plus" />
-                                          <span>Add Task</span>
+                                          <span className="kanban-icon-wrapper text-slate-500 dark:text-slate-400">
+                                            <Icon name="edit" />
+                                          </span>
+                                          <span className="kanban-menu-label">Edit Board</span>
                                         </DropdownItem>
-                                      </li>
-                                    </ul>
+                                        <DropdownItem
+                                          tag="a"
+                                          href="#delete-board"
+                                          className="kanban-menu-item is-danger text-danger"
+                                          onClick={(ev) => {
+                                            ev.preventDefault();
+                                            setDeleteBoardModal({ isOpen: true, loading: false });
+                                          }}
+                                        >
+                                          <span className="kanban-icon-wrapper text-danger">
+                                            <Icon name="trash" />
+                                          </span>
+                                          <span className="kanban-menu-label">Delete Board</span>
+                                        </DropdownItem>
+                                        <div className="kanban-dropdown-divider" />
+                                      </>
+                                    )}
+                                    <DropdownItem
+                                      tag="a"
+                                      href="#add-task"
+                                      className="kanban-menu-item"
+                                      onClick={(ev) => {
+                                        ev.preventDefault();
+                                        setTargetColumnStatus(column.id);
+                                        setSelectedTask(null);
+                                        setAddTaskModal(true);
+                                      }}
+                                    >
+                                      <span className="kanban-icon-wrapper text-indigo-500">
+                                        <Icon name="plus" />
+                                      </span>
+                                      <span className="kanban-menu-label">Add Task Here</span>
+                                    </DropdownItem>
                                   </DropdownMenu>
                                 </UncontrolledDropdown>
                               </div>
@@ -683,30 +721,54 @@ const Kanban = () => {
                                             color={column.theme || "light"}
                                             style={{ cursor: 'pointer' }}
                                           >
-                                            {column.title} <Icon name="down-sm" />
+                                            <span>{column.title}</span> <Icon name="down-sm" />
                                           </Badge>
                                         </DropdownToggle>
-                                        <DropdownMenu>
-                                          <ul className="link-list-opt no-bdr">
-                                            {columns.map((col) => (
-                                              <li key={col.id}>
-                                                <DropdownItem
-                                                  tag="a"
-                                                  href="#change"
-                                                  onClick={(ev) => {
-                                                    ev.preventDefault();
-                                                    handleManualStatusChange(
-                                                      item.id,
-                                                      column.id,
-                                                      col.id
-                                                    );
-                                                  }}
-                                                >
-                                                  <span>{col.title}</span>
-                                                </DropdownItem>
-                                              </li>
-                                            ))}
-                                          </ul>
+                                        <DropdownMenu className="kanban-floating-dropdown">
+                                          <div className="kanban-dropdown-header">Change Status</div>
+                                          {columns.map((col) => {
+                                            const isCurrent = col.id === column.id;
+                                            const dotColors = {
+                                              todo: "#94a3b8",
+                                              inprogress: "#6366f1",
+                                              review: "#f59e0b",
+                                              completed: "#10b981",
+                                              blocked: "#ef4444",
+                                            };
+                                            return (
+                                              <DropdownItem
+                                                key={col.id}
+                                                tag="a"
+                                                href="#change"
+                                                className={`kanban-menu-item ${isCurrent ? "font-semibold text-indigo-600 dark:text-indigo-400" : ""}`}
+                                                onClick={(ev) => {
+                                                  ev.preventDefault();
+                                                  handleManualStatusChange(
+                                                    item.id,
+                                                    column.id,
+                                                    col.id
+                                                  );
+                                                }}
+                                              >
+                                                <span className="kanban-icon-wrapper">
+                                                  <span
+                                                    className="d-inline-block rounded-circle"
+                                                    style={{
+                                                      width: "8px",
+                                                      height: "8px",
+                                                      backgroundColor: dotColors[col.id.toLowerCase()] || "#6366f1",
+                                                    }}
+                                                  />
+                                                </span>
+                                                <span className="kanban-menu-label">{col.title}</span>
+                                                {isCurrent && (
+                                                  <span className="kanban-menu-extra text-indigo-600 dark:text-indigo-400">
+                                                    <Icon name="check" />
+                                                  </span>
+                                                )}
+                                              </DropdownItem>
+                                            );
+                                          })}
                                         </DropdownMenu>
                                       </UncontrolledDropdown>
                                     </li>
@@ -750,50 +812,103 @@ const Kanban = () => {
                                         >
                                           <Icon name="more-v" />
                                         </DropdownToggle>
-                                        <DropdownMenu end>
-                                          <ul className="link-list-opt no-bdr">
-                                            <li>
-                                              <DropdownItem
-                                                tag="a"
-                                                href="#view"
-                                                onClick={(ev) => {
-                                                  ev.preventDefault();
-                                                  setSelectedTask(item);
-                                                  setDetailModal(true);
-                                                }}
-                                              >
-                                                <Icon name="eye" />
-                                                <span>View Details</span>
-                                              </DropdownItem>
-                                            </li>
-                                            <li>
-                                              <DropdownItem
-                                                tag="a"
-                                                href="#edit"
-                                                onClick={(ev) => {
-                                                  ev.preventDefault();
-                                                  setSelectedTask(item);
-                                                  setEditTaskModal(true);
-                                                }}
-                                              >
-                                                <Icon name="edit" />
-                                                <span>Edit Task</span>
-                                              </DropdownItem>
-                                            </li>
-                                            <li>
+                                        <DropdownMenu end className="kanban-floating-dropdown">
+                                          <div className="kanban-dropdown-header">Task Options</div>
+
+                                          <DropdownItem
+                                            tag="a"
+                                            href="#view"
+                                            className="kanban-menu-item"
+                                            onClick={(ev) => {
+                                              ev.preventDefault();
+                                              setSelectedTask(item);
+                                              setDetailModal(true);
+                                            }}
+                                          >
+                                            <span className="kanban-icon-wrapper text-slate-400">
+                                              <Icon name="eye" />
+                                            </span>
+                                            <span className="kanban-menu-label">View Details</span>
+                                            <span className="kanban-menu-extra text-slate-400">
+                                              <Icon name="chevron-right" />
+                                            </span>
+                                          </DropdownItem>
+
+                                          <DropdownItem
+                                            tag="a"
+                                            href="#edit"
+                                            className="kanban-menu-item"
+                                            onClick={(ev) => {
+                                              ev.preventDefault();
+                                              setSelectedTask(item);
+                                              setEditTaskModal(true);
+                                            }}
+                                          >
+                                            <span className="kanban-icon-wrapper text-slate-400">
+                                              <Icon name="edit" />
+                                            </span>
+                                            <span className="kanban-menu-label">Edit Task</span>
+                                            <span className="kanban-menu-extra text-slate-400">
+                                              <Icon name="chevron-right" />
+                                            </span>
+                                          </DropdownItem>
+
+                                          <div className="kanban-dropdown-divider" />
+
+                                          <DropdownItem
+                                            tag="a"
+                                            href="#copylink"
+                                            className="kanban-menu-item"
+                                            onClick={(ev) => {
+                                              ev.preventDefault();
+                                              navigator.clipboard.writeText(
+                                                window.location.origin + window.location.pathname + `?task=${item.id}`
+                                              );
+                                              toast.success("Task link copied!");
+                                            }}
+                                          >
+                                            <span className="kanban-icon-wrapper text-slate-400">
+                                              <Icon name="share" />
+                                            </span>
+                                            <span className="kanban-menu-label">Copy link</span>
+                                          </DropdownItem>
+
+                                          <DropdownItem
+                                            tag="a"
+                                            href="#copykey"
+                                            className="kanban-menu-item"
+                                            onClick={(ev) => {
+                                              ev.preventDefault();
+                                              const key = item.id ? "TASK-" + item.id.slice(0, 6).toUpperCase() : item.id;
+                                              navigator.clipboard.writeText(key);
+                                              toast.success("Task key copied!");
+                                            }}
+                                          >
+                                            <span className="kanban-icon-wrapper text-slate-400">
+                                              <Icon name="notes" />
+                                            </span>
+                                            <span className="kanban-menu-label">Copy key</span>
+                                          </DropdownItem>
+
+                                          {canDeleteTask(currentUser, item) && (
+                                            <>
+                                              <div className="kanban-dropdown-divider" />
                                               <DropdownItem
                                                 tag="a"
                                                 href="#delete"
+                                                className="kanban-menu-item is-danger text-danger"
                                                 onClick={(ev) => {
                                                   ev.preventDefault();
-                                                  handleDeleteTask(item.id);
+                                                  promptDeleteTask(item);
                                                 }}
                                               >
-                                                <Icon name="trash" />
-                                                <span>Delete Task</span>
+                                                <span className="kanban-icon-wrapper text-danger">
+                                                  <Icon name="trash" />
+                                                </span>
+                                                <span className="kanban-menu-label font-medium">Delete</span>
                                               </DropdownItem>
-                                            </li>
-                                          </ul>
+                                            </>
+                                          )}
                                         </DropdownMenu>
                                       </UncontrolledDropdown>
                                     </ul>
@@ -857,6 +972,22 @@ const Kanban = () => {
           setSelectedTask(t);
           setEditTaskModal(true);
         }}
+      />
+      <DeleteConfirmationModal
+        isOpen={deleteTaskModal.isOpen}
+        toggle={(open) => setDeleteTaskModal((prev) => ({ ...prev, isOpen: open }))}
+        onConfirm={confirmDeleteTask}
+        taskTitle={deleteTaskModal.task?.title}
+        loading={deleteTaskModal.loading}
+      />
+      <DeleteConfirmationModal
+        isOpen={deleteBoardModal.isOpen}
+        toggle={(open) => setDeleteBoardModal((prev) => ({ ...prev, isOpen: open }))}
+        onConfirm={confirmDeleteBoard}
+        title="Delete Board"
+        confirmButtonText="Delete Board"
+        description={activeBoard?.title ? `Are you sure you want to delete board "${activeBoard.title}"? All tasks in this board will also be permanently removed.` : "Are you sure you want to delete this board?"}
+        loading={deleteBoardModal.loading}
       />
     </>
   );

@@ -223,3 +223,28 @@ export const getParents = (el, selector, filter) => {
   
   return parents;
 }
+
+// Function to check whether the current user is permitted to delete a task
+// (ADMIN and MANAGER can delete any task, MEMBER can only delete their own created tasks)
+export const canDeleteTask = (currentUser, task) => {
+  if (!currentUser || !task) return false;
+  const userRole = (currentUser.role || '').toUpperCase();
+  if (['ADMIN', 'MANAGER'].includes(userRole)) return true;
+
+  const currentUserId = String(currentUser.id || currentUser.userId || currentUser._id || '');
+  if (!currentUserId) return false;
+
+  const creatorId =
+    task.createdById ||
+    task.createdBy?.id ||
+    task.userId ||
+    task.authorId ||
+    task.creatorId ||
+    task.creator?.id ||
+    task.raw?.createdById ||
+    task.raw?.createdBy?.id ||
+    task.raw?.userId ||
+    task.raw?.authorId;
+
+  return Boolean(creatorId && String(creatorId) === currentUserId);
+};

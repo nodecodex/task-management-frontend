@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { commentsApi } from "@/api/comments.api";
 import { findUpper } from "@/utils/Utils";
 import { toast } from "react-toastify";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 /* ── Quick suggestion chips ── */
 const SUGGESTIONS = [
@@ -112,16 +113,20 @@ const CommentSection = ({ taskId, className = "" }) => {
     }
   };
 
-  const handleDelete = async (commentId) => {
-    if (!commentId) return;
-    if (!window.confirm("Delete this comment?")) return;
+  const [deleteCommentModal, setDeleteCommentModal] = useState({ isOpen: false, commentId: null, loading: false });
+
+  const confirmDeleteComment = async () => {
+    if (!deleteCommentModal.commentId) return;
+    setDeleteCommentModal((prev) => ({ ...prev, loading: true }));
     try {
-      await commentsApi.deleteComment(commentId);
-      setComments((prev) => prev.filter((c) => (c.id || c._id) !== commentId));
-      toast.success("Comment deleted");
+      await commentsApi.deleteComment(deleteCommentModal.commentId);
+      setComments((prev) => prev.filter((c) => (c.id || c._id) !== deleteCommentModal.commentId));
+      toast.success("Comment deleted successfully");
+      setDeleteCommentModal({ isOpen: false, commentId: null, loading: false });
     } catch (err) {
       console.error("delete comment:", err);
-      toast.error(err?.message || "Failed to delete");
+      toast.error(err?.message || "Failed to delete comment");
+      setDeleteCommentModal((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -352,7 +357,7 @@ const CommentSection = ({ taskId, className = "" }) => {
                     {/* Delete — only for owner/admin */}
                     {canDelete(currentUser, c) && (
                       <button type="button" title="Delete"
-                        onClick={() => handleDelete(cId)}
+                        onClick={() => setDeleteCommentModal({ isOpen: true, commentId: cId, loading: false })}
                         className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors">
                         <Icon name="trash" />
                       </button>
@@ -364,6 +369,16 @@ const CommentSection = ({ taskId, className = "" }) => {
           })}
         </div>
       )}
+
+      <DeleteConfirmationModal
+        isOpen={deleteCommentModal.isOpen}
+        toggle={(open) => setDeleteCommentModal((prev) => ({ ...prev, isOpen: open }))}
+        onConfirm={confirmDeleteComment}
+        title="Delete Comment"
+        confirmButtonText="Delete"
+        description="Are you sure you want to delete this comment? This action cannot be undone."
+        loading={deleteCommentModal.loading}
+      />
     </div>
   );
 };

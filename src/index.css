@@ -259,3 +259,191 @@
   width: 0;
   height: 0;
 }
+
+/* ==========================================================================
+   Kanban Floating Dropdown (Jira / Linear SaaS Polish)
+   ========================================================================== */
+.kanban-floating-dropdown {
+  min-width: 200px !important;
+  width: auto !important;
+  max-width: 280px !important;
+  padding: 6px !important;
+  border-radius: 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.05) !important;
+  z-index: 9999 !important;
+}
+
+.dark-mode .kanban-floating-dropdown {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 14px 35px -4px rgba(0, 0, 0, 0.55), 0 6px 14px -2px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Header */
+.kanban-dropdown-header,
+.kanban-floating-dropdown .dropdown-header-label {
+  padding: 6px 10px 6px 10px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: #64748b !important;
+  user-select: none !important;
+  line-height: 1.4 !important;
+}
+
+.dark-mode .kanban-dropdown-header,
+.dark-mode .kanban-floating-dropdown .dropdown-header-label {
+  color: #94a3b8 !important;
+}
+
+/* Menu Items */
+.kanban-menu-item,
+.kanban-floating-dropdown .dropdown-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-wrap: nowrap !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 10px !important;
+  margin: 0 !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  color: #334155 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: background-color 0.12s ease, color 0.12s ease !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+.kanban-menu-item:hover,
+.kanban-menu-item:focus,
+.kanban-floating-dropdown .dropdown-item:hover,
+.kanban-floating-dropdown .dropdown-item:focus {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.dark-mode .kanban-menu-item,
+.dark-mode .kanban-floating-dropdown .dropdown-item {
+  color: #cbd5e1 !important;
+}
+
+.dark-mode .kanban-menu-item:hover,
+.dark-mode .kanban-menu-item:focus,
+.dark-mode .kanban-floating-dropdown .dropdown-item:hover,
+.dark-mode .kanban-floating-dropdown .dropdown-item:focus {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* Fixed-Width Icon Container */
+.kanban-icon-wrapper {
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin-right: 10px !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  color: #64748b !important;
+}
+
+.dark-mode .kanban-icon-wrapper {
+  color: #94a3b8 !important;
+}
+
+/* Menu Text Label */
+.kanban-menu-label {
+  flex: 1 1 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* Right Accessory (Chevrons / Checkmarks) */
+.kanban-menu-extra {
+  margin-left: auto !important;
+  padding-left: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+.dark-mode .kanban-menu-extra {
+  color: #64748b !important;
+}
+
+/* Divider */
+.kanban-dropdown-divider,
+.kanban-floating-dropdown .dropdown-divider {
+  height: 1px !important;
+  margin: 5px 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background-color: #e2e8f0 !important;
+  opacity: 1 !important;
+}
+
+.dark-mode .kanban-dropdown-divider,
+.dark-mode .kanban-floating-dropdown .dropdown-divider {
+  background-color: #334155 !important;
+}
+
+/* Danger / Delete item */
+.kanban-menu-item.is-danger,
+.kanban-floating-dropdown .dropdown-item.text-danger {
+  color: #ef4444 !important;
+}
+
+.kanban-menu-item.is-danger .kanban-icon-wrapper,
+.kanban-floating-dropdown .dropdown-item.text-danger .kanban-icon-wrapper {
+  color: #ef4444 !important;
+}
+
+.kanban-menu-item.is-danger:hover,
+.kanban-menu-item.is-danger:focus,
+.kanban-floating-dropdown .dropdown-item.text-danger:hover,
+.kanban-floating-dropdown .dropdown-item.text-danger:focus {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  color: #dc2626 !important;
+}
+
+.dark-mode .kanban-menu-item.is-danger,
+.dark-mode .kanban-floating-dropdown .dropdown-item.text-danger {
+  color: #f87171 !important;
+}
+
+.dark-mode .kanban-menu-item.is-danger .kanban-icon-wrapper,
+.dark-mode .kanban-floating-dropdown .dropdown-item.text-danger .kanban-icon-wrapper {
+  color: #f87171 !important;
+}
+
+.dark-mode .kanban-menu-item.is-danger:hover,
+.dark-mode .kanban-menu-item.is-danger:focus,
+.dark-mode .kanban-floating-dropdown .dropdown-item.text-danger:hover,
+.dark-mode .kanban-floating-dropdown .dropdown-item.text-danger:focus {
+  background-color: rgba(239, 68, 68, 0.16) !important;
+  color: #fca5a5 !important;
+}

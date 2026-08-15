@@ -310,33 +310,31 @@ export const TaskProvider = ({ children }) => {
 
     // Apply optimistic update immediately
     setColumns((prev) => {
-      const next = prev.map((col) => {
-        if (col.id === fromStatus) {
-          const item = col.items.find((i) => i.id === taskId);
-          if (item) {
-            movedTask = { ...item, status: toStatus };
-          }
-          return {
-            ...col,
-            items: col.items.filter((i) => i.id !== taskId),
-          };
+      // Locate task across all columns
+      for (const col of prev) {
+        const item = col.items.find((i) => i.id === taskId);
+        if (item) {
+          movedTask = { ...item, status: toStatus };
+          break;
         }
-        return col;
-      });
+      }
 
       if (!movedTask) return prev;
 
-      return next.map((col) => {
+      return prev.map((col) => {
         if (col.id === toStatus) {
-          const items = [...col.items];
-          if (typeof newIndex === 'number' && newIndex >= 0 && newIndex <= items.length) {
-            items.splice(newIndex, 0, movedTask);
+          const itemsWithout = col.items.filter((i) => i.id !== taskId);
+          if (typeof newIndex === 'number' && newIndex >= 0 && newIndex <= itemsWithout.length) {
+            itemsWithout.splice(newIndex, 0, movedTask);
           } else {
-            items.push(movedTask);
+            itemsWithout.push(movedTask);
           }
-          return { ...col, items };
+          return { ...col, items: itemsWithout };
         }
-        return col;
+        return {
+          ...col,
+          items: col.items.filter((i) => i.id !== taskId),
+        };
       });
     });
 
@@ -346,10 +344,25 @@ export const TaskProvider = ({ children }) => {
 
       // Refresh task with full server data
       setColumns((prev) =>
-        prev.map((col) => ({
-          ...col,
-          items: col.items.map((i) => (i.id === taskId ? (updated || i) : i)),
-        }))
+        prev.map((col) => {
+          if (col.id === (updated?.status || toStatus)) {
+            const hasTask = col.items.some((i) => i.id === taskId);
+            if (hasTask) {
+              return {
+                ...col,
+                items: col.items.map((i) => (i.id === taskId ? (updated || i) : i)),
+              };
+            }
+            return {
+              ...col,
+              items: [updated, ...col.items],
+            };
+          }
+          return {
+            ...col,
+            items: col.items.filter((i) => i.id !== taskId),
+          };
+        })
       );
       return updated;
     } catch (err) {

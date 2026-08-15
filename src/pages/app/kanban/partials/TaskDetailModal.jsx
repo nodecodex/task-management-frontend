@@ -5,9 +5,10 @@ import { Icon, UserAvatar, Button } from "@/components/Component";
 import { useTaskContext } from "@/layout/provider/TaskContext";
 import { useAuth } from "@/context/AuthContext";
 import { PRIORITY_OPTIONS, STATUS_OPTIONS } from "@/utils/constants";
-import { findUpper, getDateStructured } from "@/utils/Utils";
+import { findUpper, getDateStructured, canDeleteTask } from "@/utils/Utils";
 import { toast } from "react-toastify";
 import CommentSection from "./CommentSection";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { SectionLabel, FieldRow, DropdownTrigger, IconBtn } from "@/components/partials/TaskComponents/TaskComponents";
 
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
@@ -135,10 +136,26 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
 
 
 
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const handleDeleteTask = async () => {
-    if (!task?.id || !window.confirm("Delete this task?")) return;
-    try { await deleteTask(task.id); toast.success("Task deleted"); toggle(false); }
-    catch (e) { toast.error(e.message || "Failed to delete"); }
+    if (!task?.id) return;
+    if (!canDeleteTask(currentUser, task)) {
+      toast.error("You can only delete tasks created by you");
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      await deleteTask(task.id);
+      toast.success("Task deleted successfully");
+      setConfirmDelete(false);
+      toggle(false);
+    } catch (e) {
+      toast.error(e.message || "Failed to delete task");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   if (!task) return null;
@@ -155,7 +172,8 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
   const taskKey = task.id ? "TASK-" + task.id.slice(0, 6).toUpperCase() : "TASK";
 
   return (
-    <Modal
+    <>
+      <Modal
       size="xl"
       isOpen={isOpen}
       toggle={() => toggle(false)}
@@ -201,11 +219,13 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
                     <Icon name="edit" className="text-indigo-500" /> Edit Full Form
                   </DropdownItem>
                 )}
-                <DropdownItem tag="a" href="#delete"
-                  className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
-                  onClick={(e) => { e.preventDefault(); handleDeleteTask(); }}>
-                  <Icon name="trash" className="text-rose-500" /> Delete Task
-                </DropdownItem>
+                {canDeleteTask(currentUser, task) && (
+                  <DropdownItem tag="a" href="#delete"
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                    onClick={(e) => { e.preventDefault(); setConfirmDelete(true); }}>
+                    <Icon name="trash" className="text-rose-500" /> Delete Task
+                  </DropdownItem>
+                )}
               </DropdownMenu>
             </UncontrolledDropdown>
             <IconBtn title="Close" onClick={() => toggle(false)}>
@@ -583,6 +603,15 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
         </div>
       </ModalBody>
     </Modal>
+
+    <DeleteConfirmationModal
+      isOpen={confirmDelete}
+      toggle={setConfirmDelete}
+      onConfirm={handleDeleteTask}
+      taskTitle={task.title}
+      loading={deleteLoading}
+    />
+    </>
   );
 };
 

@@ -5,8 +5,11 @@ import { Icon, Button, RSelect } from "@/components/Component";
 import { useForm } from "react-hook-form";
 import { useTaskContext } from "@/layout/provider/TaskContext";
 import { PRIORITY_OPTIONS, STATUS_OPTIONS } from "@/utils/constants";
+import { useAuth } from "@/context/AuthContext";
+import { canDeleteTask } from "@/utils/Utils";
 import { toast } from "react-toastify";
 import { commentsApi } from "@/api/comments.api";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
   const {
@@ -20,9 +23,12 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
     deleteTask,
   } = useTaskContext();
 
+  const { user: currentUser } = useAuth();
+
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [selectedBoard, setSelectedBoard] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -175,12 +181,15 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
 
   const handleDeleteTask = async () => {
     if (!task?.id) return;
-    if (!window.confirm("Are you sure you want to delete this task?")) return;
-
+    if (!canDeleteTask(currentUser, task)) {
+      toast.error("You can only delete tasks created by you");
+      return;
+    }
     setDeleteLoading(true);
     try {
       await deleteTask(task.id);
       toast.success("Task deleted successfully");
+      setConfirmDelete(false);
       toggle(false);
     } catch (err) {
       toast.error(err.message || "Failed to delete task");
@@ -190,6 +199,7 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
   };
 
   return (
+    <>
     <Modal size="lg" isOpen={isOpen} toggle={() => toggle(false)}>
       <ModalBody>
         <a
@@ -406,14 +416,14 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
                       </Button>
                     </li>
                   </ul>
-                  {edit && (
+                  {edit && canDeleteTask(currentUser, task) && (
                     <ul>
                       <li>
                         <Button
                           color="danger"
                           size="md"
                           type="button"
-                          onClick={handleDeleteTask}
+                          onClick={() => setConfirmDelete(true)}
                           disabled={deleteLoading}
                         >
                           {deleteLoading ? <Spinner size="sm" color="light" /> : "Delete Task"}
@@ -428,6 +438,15 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
         </div>
       </ModalBody>
     </Modal>
+
+    <DeleteConfirmationModal
+      isOpen={confirmDelete}
+      toggle={setConfirmDelete}
+      onConfirm={handleDeleteTask}
+      taskTitle={task?.title}
+      loading={deleteLoading}
+    />
+    </>
   );
 };
 
