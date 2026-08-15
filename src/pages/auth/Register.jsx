@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Head from "@/layout/head/Head";
 import AuthFooter from "./AuthFooter";
+import Logo from "@/layout/logo/Logo";
 import {
   Block,
   BlockContent,
@@ -16,6 +17,7 @@ import {
 import { Form, Spinner, Alert } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 
 const Register = () => {
@@ -35,11 +37,25 @@ const Register = () => {
         email: formData.email.trim(),
         password: formData.passcode,
       });
+      toast.success("Registration successful! You can now login.");
       navigate(`/auth-success`);
     } catch (err) {
-      setError(err.message || "Failed to create account");
+      console.error('Registration error:', err);
+      const errMsg = err.message || "Failed to create account";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onInvalidSubmit = (formErrors) => {
+    const errorKeys = Object.keys(formErrors);
+    if (errorKeys.length > 0) {
+      const firstError = formErrors[errorKeys[0]];
+      if (firstError?.message) {
+        toast.warning(firstError.message);
+      }
     }
   };
 
@@ -47,19 +63,7 @@ const Register = () => {
     <Head title="Register" />
     <Block className="nk-block-middle nk-auth-body wide-xs">
       <div className="brand-logo pb-4 text-center">
-        <Link to="/app-dashboard" className="logo-link" style={{ textDecoration: 'none' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: '42px', height: '42px',
-              background: '#6576ff', borderRadius: '10px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(101,118,255,0.35)',
-            }}>
-              <span style={{ color: '#fff', fontWeight: '800', fontSize: '16px', fontFamily: 'inherit' }}>JS</span>
-            </div>
-            <span style={{ fontWeight: '700', fontSize: '20px', color: '#364a63', fontFamily: 'inherit' }}>Jagjit Singh</span>
-          </div>
-        </Link>
+        <Logo to="/" />
       </div>
       <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
         <BlockHead>
@@ -77,7 +81,7 @@ const Register = () => {
             </Alert>
           </div>
         )}
-        <Form className="is-alter" onSubmit={handleSubmit(handleFormSubmit)}>
+        <Form className="is-alter" onSubmit={handleSubmit(handleFormSubmit, onInvalidSubmit)}>
           <div className="form-group">
             <label className="form-label" htmlFor="name">
               Name

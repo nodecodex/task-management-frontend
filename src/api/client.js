@@ -35,17 +35,25 @@ apiClient.interceptors.response.use(
       }
     }
 
+    let detailMessage = null;
+    if (Array.isArray(errorData?.error?.details) && errorData.error.details.length > 0) {
+      detailMessage = errorData.error.details.map((d) => d.message || d).join(', ');
+    } else if (Array.isArray(errorData?.details) && errorData.details.length > 0) {
+      detailMessage = errorData.details.map((d) => d.message || d).join(', ');
+    } else if (Array.isArray(errorData?.errors) && errorData.errors.length > 0) {
+      detailMessage = errorData.errors.map((d) => d.msg || d.message || d).join(', ');
+    }
+
     const message =
+      detailMessage ||
       errorData?.message ||
-      (errorData?.error?.details && Array.isArray(errorData.error.details)
-        ? errorData.error.details.map((d) => d.message || d).join(', ')
-        : null) ||
+      (typeof errorData?.error === 'string' ? errorData.error : null) ||
       error.message ||
       'An unexpected error occurred';
 
     const enhancedError = new Error(message);
     enhancedError.status = status;
-    enhancedError.code = errorData?.error?.code;
+    enhancedError.code = errorData?.error?.code || errorData?.code;
     enhancedError.data = errorData;
     enhancedError.originalError = error;
 
