@@ -5,7 +5,7 @@ const AuthFooter = () => {
     <div className="nk-footer nk-auth-footer-full">
       <div className="container wide-lg">
         <div className="nk-block-content text-center">
-          <p className="text-soft">&copy; 2025 Jagjit Singh. All Rights Reserved.</p>
+          <p className="text-soft">&copy; {new Date().getFullYear()} Jagjit Singh. All Rights Reserved.</p>
         </div>
       </div>
     </div>
