@@ -447,3 +447,104 @@
   background-color: rgba(239, 68, 68, 0.16) !important;
   color: #fca5a5 !important;
 }
+
+/* ==========================================================================
+   Comprehensive Responsive Enhancements (Mobile, Tablet, Desktop)
+   ========================================================================== */
+
+/* Prevent accidental whole-page horizontal scrolling while preserving inner scrolling */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.nk-wrap, .nk-main, .nk-content {
+  max-width: 100%;
+}
+
+/* Responsive Kanban Toolbar & Columns */
+@media (max-width: 767.98px) {
+  .kanban-board {
+    width: clamp(270px, 82vw, 310px) !important;
+    padding: 8px !important;
+  }
+
+  .kanban-container {
+    padding-left: 10px;
+    padding-right: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .kanban-board-header {
+    padding: 0.5rem 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .kanban-item {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .kanban-tool-search {
+    width: 100%;
+  }
+
+  .kanban-search-input {
+    width: 100% !important;
+  }
+
+  /* Expanded mobile toolbar in Kanban header */
+  .toggle-expand-content.expanded .nk-block-tools {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.625rem !important;
+    padding: 0.75rem 0;
+  }
+
+  .toggle-expand-content.expanded .nk-block-tools > li {
+    width: 100%;
+  }
+
+  .toggle-expand-content.expanded .nk-block-tools .btn,
+  .toggle-expand-content.expanded .nk-block-tools .dropdown,
+  .toggle-expand-content.expanded .nk-block-tools .dropdown-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .toggle-expand-content.expanded .nk-block-tools .btn-group {
+    width: 100%;
+    display: flex;
+  }
+
+  .toggle-expand-content.expanded .nk-block-tools .btn-group .btn {
+    flex: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .kanban-search-input {
+    width: 180px;
+    transition: width 0.2s ease;
+  }
+
+  .kanban-search-input:focus {
+    width: 220px;
+  }
+}
+
+/* Modals & Dialogs on Small Screens */
+@media (max-width: 640px) {
+  .task-detail-modal-custom .modal-dialog,
+  .modal-dialog {
+    margin: 0.5rem auto !important;
+    max-width: calc(100vw - 1rem) !important;
+  }
+
+  .task-detail-modal-custom .modal-content {
+    border-radius: 12px !important;
+  }
+}

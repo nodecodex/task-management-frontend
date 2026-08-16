@@ -235,10 +235,10 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
         </div>
 
         {/* ── Two-Pane Body ── */}
-        <div className="flex flex-col lg:flex-row" style={{ maxHeight: "82vh", minHeight: "560px" }}>
+        <div className="flex flex-col lg:flex-row max-h-[85vh] lg:min-h-[520px] overflow-y-auto lg:overflow-y-visible">
 
           {/* ── Left Main Panel ── */}
-          <div className="flex-1 min-w-0 overflow-y-auto p-5 space-y-5" style={{ minHeight: 0 }}>
+          <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-5 space-y-5" style={{ minHeight: 0 }}>
 
             {/* Title */}
             <div>

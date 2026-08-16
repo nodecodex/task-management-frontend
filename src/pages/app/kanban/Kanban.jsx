@@ -364,7 +364,7 @@ const Kanban = () => {
                       onClick={(e) => e.preventDefault()}
                       className="btn btn-outline-primary d-flex align-items-center gap-2 py-2"
                     >
-                      <span className="text-truncate" style={{ maxWidth: "200px" }}>
+                      <span className="text-truncate" style={{ maxWidth: "clamp(130px, 35vw, 220px)" }}>
                         {activeBoard?.title || "Select Board"}
                       </span>
                       <Icon name="chevron-down" />
@@ -409,18 +409,17 @@ const Kanban = () => {
                 <div className={`toggle-expand-content ${smBtn ? "expanded" : ""}`}>
                   <ul className="nk-block-tools g-3 align-items-center">
                     {/* Search box */}
-                    <li>
+                    <li className="kanban-tool-search">
                       <div className="form-control-wrap">
                         <div className="form-icon form-icon-left">
                           <Icon name="search" />
                         </div>
                         <input
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control form-control-sm kanban-search-input"
                           placeholder="Search tasks..."
                           value={searchInput}
                           onChange={handleSearchChange}
-                          style={{ width: "200px" }}
                         />
                       </div>
                     </li>
@@ -470,7 +469,7 @@ const Kanban = () => {
 
                     {/* View Mode Toggle */}
                     <li>
-                      <div className="btn-group ">
+                      <div className="btn-group">
                         <Button
                           color={viewMode === "kanban" ? "primary" : "light"}
                           outline={viewMode !== "kanban"}
@@ -497,7 +496,7 @@ const Kanban = () => {
                       <Button
                         color="light"
                         outline
-                        className="btn-white"
+                        className="btn-white kanban-add-btn"
                         onClick={() => {
                           setTargetColumnStatus("TODO");
                           setSelectedTask(null);
@@ -513,6 +512,7 @@ const Kanban = () => {
                     <li>
                       <Button
                         color="primary"
+                        className="kanban-add-board-btn"
                         onClick={() => {
                           setAddBoardModal(true);
                         }}
@@ -640,8 +640,8 @@ const Kanban = () => {
                                 <Item key={item.id} item={item} className="kanban-item">
                                   <div className="kanban-item-title">
                                     <h6
-                                      className="title cursor-pointer"
-                                      style={{ cursor: "pointer" }}
+                                      className="title cursor-pointer text-break"
+                                      style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "anywhere" }}
                                       onClick={() => {
                                         setSelectedTask(item);
                                         setDetailModal(true);
