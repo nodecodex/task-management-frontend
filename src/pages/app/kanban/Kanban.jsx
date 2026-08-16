@@ -74,9 +74,8 @@ const Column = ({ id, className, children, onLoadMore, hasMore, loading, error }
 
   return (
     <main
-      className={className && className}
+      className={`${className ? className : ''} kanban-drag max-h-[350px] overflow-y-auto`}
       ref={setNodeRef}
-      style={{ maxHeight: "350px", overflowY: "auto" }}
     >
       {children}
       {hasMore && (
@@ -382,7 +381,7 @@ const Kanban = () => {
                                 selectBoard(b);
                               }}
                             >
-                              <span className="text-truncate" style={{ maxWidth: "250px", display: "inline-block" }}>
+                              <span className="text-truncate inline-block max-w-[250px]">
                                 {b.title}
                               </span>
                             </DropdownItem>
@@ -529,7 +528,7 @@ const Kanban = () => {
         </BlockHead>
 
         {isLoading && columns.every((c) => c.items.length === 0) ? (
-          <div className="d-flex justify-content-center align-items-center p-5" style={{ minHeight: "300px" }}>
+          <div className="d-flex justify-content-center align-items-center p-5 min-h-[300px]">
             <Spinner color="primary" />
           </div>
         ) : (
@@ -640,8 +639,8 @@ const Kanban = () => {
                                 <Item key={item.id} item={item} className="kanban-item">
                                   <div className="kanban-item-title">
                                     <h6
-                                      className="title cursor-pointer text-break"
-                                      style={{ cursor: "pointer", wordBreak: "break-word", overflowWrap: "anywhere" }}
+                                      className="title cursor-pointer break-words"
+                                      style={{ overflowWrap: "anywhere" }}
                                       onClick={() => {
                                         setSelectedTask(item);
                                         setDetailModal(true);
@@ -719,7 +718,7 @@ const Kanban = () => {
                                         >
                                           <Badge
                                             color={column.theme || "light"}
-                                            style={{ cursor: 'pointer' }}
+                                            className="cursor-pointer"
                                           >
                                             <span>{column.title}</span> <Icon name="down-sm" />
                                           </Badge>

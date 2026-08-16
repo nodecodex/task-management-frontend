@@ -4,8 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { Spinner } from "reactstrap";
 
 const LoadingScreen = () => (
-  <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
-    <Spinner color="primary" style={{ width: "3rem", height: "3rem" }} />
+  <div className="d-flex justify-content-center align-items-center min-h-screen">
+    <Spinner color="primary" className="w-12 h-12" />
   </div>
 );
 

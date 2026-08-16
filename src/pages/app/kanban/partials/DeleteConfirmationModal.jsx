@@ -25,34 +25,26 @@ const DeleteConfirmationModal = ({
         {/* Close Button */}
         <button
           type="button"
-          className="btn-close position-absolute top-0 end-0 m-3"
+          className="btn-close position-absolute top-0 end-0 m-3 cursor-pointer"
           aria-label="Close"
           disabled={loading}
           onClick={() => toggle(false)}
-          style={{ cursor: "pointer", zIndex: 10 }}
         />
 
         {/* Warning Icon Badge */}
         <div
-          className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
-          style={{
-            width: "68px",
-            height: "68px",
-            backgroundColor: "rgba(232, 83, 71, 0.12)",
-            color: "#e85347",
-            fontSize: "2rem",
-          }}
+          className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 w-[68px] h-[68px] text-[#e85347] text-[2rem] bg-[rgba(232,83,71,0.12)]"
         >
           <Icon name="trash" />
         </div>
 
         {/* Modal Title */}
-        <h4 className="fw-bold mb-2 text-slate-900 dark:text-white" style={{ fontSize: "1.25rem" }}>
+        <h4 className="fw-bold mb-2 text-slate-900 dark:text-white text-xl">
           {title}
         </h4>
 
         {/* Modal Description */}
-        <div className="text-muted small mb-4 px-2" style={{ lineHeight: "1.55", fontSize: "0.925rem" }}>
+        <div className="text-muted small mb-4 px-2 leading-[1.55] text-[0.925rem]">
           {description ? (
             description
           ) : (

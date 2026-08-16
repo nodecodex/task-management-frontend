@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Spinner } from "reactstrap";
-import { Icon, UserAvatar } from "@/components/Component";
+import { Icon, UserAvatar, Button } from "@/components/Component";
 import { useAuth } from "@/context/AuthContext";
 import { commentsApi } from "@/api/comments.api";
 import { findUpper } from "@/utils/Utils";
@@ -166,7 +166,7 @@ const CommentSection = ({ taskId, className = "" }) => {
         <div className="flex-1 min-w-0 block">
           {/* Collapsed: single-line click target */}
           {!expanded && (
-            <button
+            <Button
               type="button"
               onClick={handleExpand}
               className="
@@ -180,7 +180,7 @@ const CommentSection = ({ taskId, className = "" }) => {
               "
             >
               Add a comment...
-            </button>
+            </Button>
           )}
 
           {/* Expanded */}
@@ -199,10 +199,9 @@ const CommentSection = ({ taskId, className = "" }) => {
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Add a comment..."
-                rows={4}
-                style={{ resize: "vertical", minHeight: "90px" }}
+                rows={3}
                 className="
-                  block w-full bg-transparent
+                  block w-full bg-transparent resize-y min-h-22.5
                   px-4 pt-3 pb-2
                   text-sm text-slate-800 dark:text-slate-100
                   placeholder-slate-400 dark:placeholder-slate-500
@@ -214,7 +213,7 @@ const CommentSection = ({ taskId, className = "" }) => {
               {/* Suggestion chips */}
               <div className="flex flex-wrap gap-1.5 px-4 pb-3 shrink-0">
                 {SUGGESTIONS.map((s) => (
-                  <button
+                  <Button
                     key={s}
                     type="button"
                     onClick={() => handleSuggestion(s)}
@@ -229,15 +228,12 @@ const CommentSection = ({ taskId, className = "" }) => {
                     "
                   >
                     {s}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
-              {/* Divider */}
-              <div className="h-px bg-slate-100 dark:bg-slate-800 w-full shrink-0" />
-
               {/* Footer */}
-              <div className="flex items-center justify-between gap-3 px-4 py-2.5 shrink-0">
+              <div className="flex items-center justify-between gap-3 px-4 py-2.5 mb-3 shrink-0">
                 <span className="text-[11px] text-slate-400 dark:text-slate-500 select-none">
                   <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[10px] text-slate-500 dark:text-slate-400">
                     Ctrl+Enter
@@ -250,7 +246,7 @@ const CommentSection = ({ taskId, className = "" }) => {
                 </span>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <button
+                  <Button
                     type="button"
                     onClick={handleCancel}
                     className="
@@ -262,23 +258,21 @@ const CommentSection = ({ taskId, className = "" }) => {
                     "
                   >
                     Cancel
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
+                    color="primary"
                     disabled={submitting || !text.trim()}
                     onClick={handlePost}
                     className="
                       inline-flex items-center gap-1.5
                       px-4 py-1.5 rounded-lg text-xs font-semibold
-                      text-white bg-indigo-600
-                      hover:bg-indigo-700 active:bg-indigo-800
-                      disabled:opacity-40 disabled:cursor-not-allowed
                       transition-colors
                     "
                   >
                     {submitting ? <Spinner size="sm" /> : "Save"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -341,26 +335,26 @@ const CommentSection = ({ taskId, className = "" }) => {
                   {/* Action row */}
                   <div className="flex items-center gap-1 mt-2">
                     {/* Like */}
-                    <button type="button" title="Like"
+                    <Button type="button" title="Like"
                       className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       <Icon name="thumbs-up" />
-                    </button>
+                    </Button>
 
                     {/* Reply */}
-                    <button type="button" title="Reply"
+                    <Button type="button" title="Reply"
                       onClick={() => { setText(`@${name} `); setExpanded(true); }}
                       className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                       <Icon name="reply" />
                       <span>Reply</span>
-                    </button>
+                    </Button>
 
                     {/* Delete — only for owner/admin */}
                     {canDelete(currentUser, c) && (
-                      <button type="button" title="Delete"
+                      <Button type="button" title="Delete"
                         onClick={() => setDeleteCommentModal({ isOpen: true, commentId: cId, loading: false })}
                         className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors">
                         <Icon name="trash" />
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>

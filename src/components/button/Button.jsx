@@ -4,14 +4,14 @@ import classNames from "classnames";
 const Button = ({ color, size, className, outline, disabled, ...props }) => {
   const buttonClass = classNames({
     btn: true,
-    [`btn-${color}`]: !outline,
-    [`btn-outline-${color}`]: outline,
+    [`btn-${color}`]: color && !outline,
+    [`btn-outline-${color}`]: color && outline,
     [`btn-${size}`]: size,
     disabled: disabled,
     [`${className}`]: className,
   });
   return (
-    <button className={buttonClass} {...props}>
+    <button className={buttonClass} disabled={disabled} {...props}>
       {props.children}
     </button>
   );
