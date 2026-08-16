@@ -435,7 +435,7 @@ const Dashboard = () => {
                                           key={idx}
                                           className="xs"
                                           theme={u?.theme || "primary"}
-                                          text={findUpper(u?.name || "User")}
+                                          text={findUpper(u?.value || "User")}
                                           image={u?.avatar}
                                         />
                                       ))
