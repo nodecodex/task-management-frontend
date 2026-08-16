@@ -26,7 +26,9 @@ export const SOCKET_EVENTS = {
   TASK_MOVED: 'task:moved',
   TASK_ASSIGNED: 'task:assigned',
   TASK_COMMENTED: 'task:commented',
+  BOARD_CREATED: 'board:created',
   BOARD_UPDATED: 'board:updated',
+  BOARD_DELETED: 'board:deleted',
   JOIN_BOARD: 'join:board',
   LEAVE_BOARD: 'leave:board',
 };
