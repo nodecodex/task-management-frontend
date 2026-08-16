@@ -262,7 +262,7 @@ const Dashboard = () => {
               </div>
             </BlockHeadContent>
             <BlockHeadContent>
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex align-items-center flex-wrap gap-2">
                 <Button
                   color="light"
                   outline
@@ -291,7 +291,7 @@ const Dashboard = () => {
             {/* KPI Stat Cards */}
             <Row className="g-gs">
               {statusCards.map((item, index) => (
-                <Col key={index} xxl="4" sm="6">
+                <Col key={index} xxl="4" md="6" sm="6" xs="12">
                   <Card className="card-bordered card-full">
                     <div className="card-inner">
                       <div className="d-flex align-items-center justify-content-between mb-2">

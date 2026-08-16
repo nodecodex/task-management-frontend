@@ -397,8 +397,8 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
 
               {/* Form Buttons */}
               <Col className="col-12">
-                <div className="d-flex justify-content-between mt-3">
-                  <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
+                <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">
+                  <ul className="d-flex align-items-center flex-wrap gap-2 mb-0">
                     <li>
                       <Button color="primary" size="md" type="submit" disabled={loading}>
                         {loading ? <Spinner size="sm" color="light" /> : `${edit ? "Update" : "Add"} Task`}
@@ -417,7 +417,7 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
                     </li>
                   </ul>
                   {edit && canDeleteTask(currentUser, task) && (
-                    <ul>
+                    <ul className="mb-0">
                       <li>
                         <Button
                           color="danger"
