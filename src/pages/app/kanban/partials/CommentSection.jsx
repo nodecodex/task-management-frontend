@@ -137,24 +137,24 @@ const CommentSection = ({ taskId, className = "" }) => {
 
   /* ── render ── */
   return (
-    <div className={`w-full min-w-0 flex flex-col gap-6 ${className}`}>
+    <div className={`w-full min-w-0 block space-y-6 ${className}`}>
 
       {/* ══════════ Section heading ══════════ */}
-      <div className="flex items-center gap-2">
-        <h6 className="m-0 text-sm font-bold text-slate-800 dark:text-slate-100">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-0">
           Comments
-        </h6>
+        </div>
         {!loading && comments.length > 0 && (
-          <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300">
             {comments.length}
           </span>
         )}
       </div>
 
       {/* ══════════ Composer ══════════ */}
-      <div className="flex items-start gap-3 relative z-10 mb-6 shrink-0">
+      <div style={{ display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr)', gap: '12px', marginBottom: '24px', position: 'relative', zIndex: 10 }}>
         {/* Avatar */}
-        <div className="shrink-0 pt-1">
+        <div style={{ paddingTop: '4px' }}>
           <UserAvatar
             text={getInitial(currentUser?.name)}
             theme="primary"
@@ -163,7 +163,7 @@ const CommentSection = ({ taskId, className = "" }) => {
         </div>
 
         {/* Composer card */}
-        <div className="flex-1 min-w-0 block">
+        <div style={{ display: 'block', minWidth: 0 }}>
           {/* Collapsed: single-line click target */}
           {!expanded && (
             <Button
@@ -173,10 +173,10 @@ const CommentSection = ({ taskId, className = "" }) => {
                 w-full text-left px-4 py-3 rounded-xl
                 border border-slate-200 dark:border-slate-700
                 bg-white dark:bg-slate-900
-                text-sm text-slate-400 dark:text-slate-500
-                hover:border-indigo-400 dark:hover:border-indigo-600
+                text-[13px] text-slate-400 dark:text-slate-500
+                hover:border-indigo-300 dark:hover:border-indigo-600
                 hover:bg-slate-50 dark:hover:bg-slate-800/60
-                transition-colors shadow-sm
+                transition-all shadow-sm
               "
             >
               Add a comment...
@@ -299,15 +299,15 @@ const CommentSection = ({ taskId, className = "" }) => {
       )}
 
       {!loading && comments.length > 0 && (
-        <div className="flex flex-col gap-5">
+        <div style={{ display: 'block', marginTop: '16px' }}>
           {comments.map((c) => {
             const cId = c.id || c._id;
             const name = getName(c);
 
             return (
-              <div key={cId} className="flex gap-3 group">
+              <div key={cId} style={{ display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr)', gap: '12px', marginBottom: '28px', position: 'relative' }}>
                 {/* Avatar */}
-                <div className="shrink-0 pt-0.5">
+                <div style={{ paddingTop: '2px' }}>
                   <UserAvatar
                     text={getInitial(name)}
                     theme="secondary"
@@ -316,7 +316,7 @@ const CommentSection = ({ taskId, className = "" }) => {
                 </div>
 
                 {/* Body */}
-                <div className="flex-1 min-w-0">
+                <div style={{ display: 'block', minWidth: 0 }}>
                   {/* Name + time */}
                   <div className="flex items-baseline gap-2 mb-1 flex-wrap">
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
@@ -328,33 +328,39 @@ const CommentSection = ({ taskId, className = "" }) => {
                   </div>
 
                   {/* Comment text */}
-                  <p className="m-0 text-xs leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
+                  <p className="m-0 text-[13px] leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
                     {c.comment}
                   </p>
 
                   {/* Action row */}
-                  <div className="flex items-center gap-1 mt-2">
+                  <div className="flex flex-wrap items-center gap-2 mt-2 pb-1">
                     {/* Like */}
-                    <Button type="button" title="Like"
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                      <Icon name="thumbs-up" />
-                    </Button>
+                    <div className="block shrink-0">
+                      <Button type="button" title="Like" color="light" style={{ padding: '2px 6px', height: '24px', lineHeight: '20px', margin: 0 }}
+                        className="inline-flex items-center justify-center gap-1 rounded-md text-[11px] font-medium text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 shadow-none border-0">
+                        <Icon name="thumbs-up" className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
 
                     {/* Reply */}
-                    <Button type="button" title="Reply"
-                      onClick={() => { setText(`@${name} `); setExpanded(true); }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                      <Icon name="reply" />
-                      <span>Reply</span>
-                    </Button>
+                    <div className="block shrink-0">
+                      <Button type="button" title="Reply" color="light" style={{ padding: '2px 6px', height: '24px', lineHeight: '20px', margin: 0 }}
+                        onClick={() => { setText(`@${name} `); setExpanded(true); }}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-md text-[11px] font-medium text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 shadow-none border-0">
+                        <Icon name="reply" className="w-3.5 h-3.5" />
+                        <span>Reply</span>
+                      </Button>
+                    </div>
 
                     {/* Delete — only for owner/admin */}
                     {canDelete(currentUser, c) && (
-                      <Button type="button" title="Delete"
-                        onClick={() => setDeleteCommentModal({ isOpen: true, commentId: cId, loading: false })}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors">
-                        <Icon name="trash" />
-                      </Button>
+                      <div className="block shrink-0">
+                        <Button type="button" title="Delete" color="light" style={{ padding: '2px 6px', height: '24px', lineHeight: '20px', margin: 0 }}
+                          onClick={() => setDeleteCommentModal({ isOpen: true, commentId: cId, loading: false })}
+                          className="inline-flex items-center justify-center gap-1 rounded-md text-[11px] text-slate-400 dark:text-slate-500 hover:text-rose-500 bg-transparent hover:bg-rose-50 dark:hover:bg-rose-950/40 shadow-none border-0">
+                          <Icon name="trash" className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>
