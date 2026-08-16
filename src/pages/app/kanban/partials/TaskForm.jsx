@@ -372,7 +372,7 @@ const TaskForm = ({ toggle, isOpen, edit, task, defaultStatus }) => {
                     </div>
 
                     {comments.length > 0 && (
-                      <div className="p-3 bg-light rounded" style={{ maxHeight: "180px", overflowY: "auto" }}>
+                      <div className="p-3 bg-light rounded max-h-[180px] overflow-y-auto">
                         {comments.map((c) => (
                           <div key={c.id} className="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
                             <div>

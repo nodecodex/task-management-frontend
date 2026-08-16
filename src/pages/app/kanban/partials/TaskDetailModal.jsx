@@ -238,7 +238,7 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
         <div className="flex flex-col lg:flex-row max-h-[85vh] lg:min-h-[520px] overflow-y-auto lg:overflow-y-visible">
 
           {/* ── Left Main Panel ── */}
-          <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-5 space-y-5" style={{ minHeight: 0 }}>
+          <div className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-5 space-y-5 min-h-0">
 
             {/* Title */}
             <div>
@@ -388,7 +388,7 @@ const TaskDetailModal = ({ isOpen, toggle, task, onEditFull }) => {
           </div>
 
           {/* ── Right Sidebar ── */}
-          <div className="w-full lg:w-72 xl:w-80 shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-700/60 bg-slate-50/60 dark:bg-[#111822] p-5 space-y-5" style={{ minHeight: 0 }}>
+          <div className="w-full lg:w-72 xl:w-80 shrink-0 overflow-y-auto border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-700/60 bg-slate-50/60 dark:bg-[#111822] p-5 space-y-5 min-h-0">
 
             {/* Status */}
             <FieldRow label="Status">

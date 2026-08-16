@@ -328,7 +328,7 @@ const Dashboard = () => {
                       </div>
                       <span className="small text-muted">{totalTasks} total</span>
                     </div>
-                    <div className="d-flex justify-content-center align-items-center" style={{ height: "260px" }}>
+                    <div className="d-flex justify-content-center align-items-center h-[260px]">
                       {totalTasks > 0 ? (
                         <Doughnut
                           data={statusChartData}
@@ -360,7 +360,7 @@ const Dashboard = () => {
                       </div>
                       <span className="small text-muted">Urgency Overview</span>
                     </div>
-                    <div className="d-flex justify-content-center align-items-center" style={{ height: "260px" }}>
+                    <div className="d-flex justify-content-center align-items-center h-[260px]">
                       {totalTasks > 0 ? (
                         <Bar
                           data={priorityChartData}
@@ -420,7 +420,7 @@ const Dashboard = () => {
                                 <td>
                                   <span className="fw-bold text-dark">{t.title}</span>
                                   {t.desc && (
-                                    <div className="small text-muted text-truncate" style={{ maxWidth: "250px" }}>
+                                    <div className="small text-muted text-truncate max-w-[250px]">
                                       {t.desc}
                                     </div>
                                   )}

@@ -24,12 +24,12 @@ const Header = ({ fixed, className, ...props }) => {
     <div className={headerClass}>
       <div className="container-lg wide-xl">
         <div className="nk-header-wrap">
-          {/* Logo */}
+          {/* Brand Logo */}
           <div className="nk-header-brand">
             <Logo />
           </div>
 
-          {/* Nav - Main */}
+          {/* Nav Links */}
           <div className="nk-header-menu">
             <ul className="nk-menu nk-menu-main">
               <li className={`nk-menu-item ${location.pathname === '/app-dashboard' ? 'active current-page' : ''}`}>
@@ -45,10 +45,9 @@ const Header = ({ fixed, className, ...props }) => {
             </ul>
           </div>
 
-          {/* Right side tools */}
+          {/* Right side tools — user dropdown + mobile sidebar toggle */}
           <div className="nk-header-tools">
             <ul className="nk-quick-nav">
-
               <li className="user-dropdown">
                 <User />
               </li>

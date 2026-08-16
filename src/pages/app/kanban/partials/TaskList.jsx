@@ -108,22 +108,22 @@ const TaskList = ({ setSelectedTask, setDetailModal }) => {
           <table className="table table-hover align-middle mb-0">
             <thead className="table-light">
               <tr>
-                <th className="py-3 px-4" style={{ width: "35%" }}>
+                <th className="py-3 px-4 w-[35%]">
                   <span className="overline-title text-muted">Task Title</span>
                 </th>
-                <th className="py-3 px-3" style={{ width: "15%" }}>
+                <th className="py-3 px-3 w-[15%]">
                   <span className="overline-title text-muted">Status</span>
                 </th>
-                <th className="py-3 px-3" style={{ width: "12%" }}>
+                <th className="py-3 px-3 w-[12%]">
                   <span className="overline-title text-muted">Priority</span>
                 </th>
-                <th className="py-3 px-3" style={{ width: "15%" }}>
+                <th className="py-3 px-3 w-[15%]">
                   <span className="overline-title text-muted">Assignees</span>
                 </th>
-                <th className="py-3 px-3" style={{ width: "15%" }}>
+                <th className="py-3 px-3 w-[15%]">
                   <span className="overline-title text-muted">Due Date</span>
                 </th>
-                <th className="py-3 px-4 text-end" style={{ width: "8%" }}>
+                <th className="py-3 px-4 text-end w-[8%]">
                   <span className="overline-title text-muted">Actions</span>
                 </th>
               </tr>
@@ -142,8 +142,7 @@ const TaskList = ({ setSelectedTask, setDetailModal }) => {
                     <td className="py-3 px-4">
                       <div>
                         <span
-                          className="fw-bold text-primary cursor-pointer"
-                          style={{ cursor: "pointer", fontSize: "0.95rem" }}
+                          className="fw-bold text-primary cursor-pointer text-[0.95rem]"
                           onClick={() => {
                             setSelectedTask(task);
                             setDetailModal(true);
@@ -152,7 +151,7 @@ const TaskList = ({ setSelectedTask, setDetailModal }) => {
                           {task.title}
                         </span>
                         {task.desc && (
-                          <div className="small text-muted text-truncate mt-1" style={{ maxWidth: "380px" }}>
+                          <div className="small text-muted text-truncate mt-1 max-w-[380px]">
                             {task.desc}
                           </div>
                         )}
