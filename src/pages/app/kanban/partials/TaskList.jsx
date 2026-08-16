@@ -168,7 +168,7 @@ const TaskList = ({ setSelectedTask, setDetailModal }) => {
                                 key={idx}
                                 className="xs"
                                 theme={user?.theme || "primary"}
-                                text={findUpper(user?.name || "User")}
+                                text={findUpper(user?.label || "User")}
                                 image={user?.avatar}
                               />
                             ))}
