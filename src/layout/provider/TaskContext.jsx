@@ -169,7 +169,58 @@ export const TaskProvider = ({ children }) => {
     }
   }, [boardId, searchQuery, filterStatus, filterPriority, filterAssignee, filterCategoryId, loadInitialTasks]);
 
-  // Socket.IO real-time synchronization
+  // Socket.IO real-time global board synchronization
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const handleBoardCreated = (newBoard) => {
+      if (!newBoard?.id) return;
+      setBoards((prev) => {
+        if (prev.some((b) => b.id === newBoard.id)) return prev;
+        return [...prev, newBoard];
+      });
+    };
+
+    const handleBoardUpdated = (updatedBoard) => {
+      if (!updatedBoard?.id) return;
+      setBoards((prev) =>
+        prev.map((b) => (b.id === updatedBoard.id ? { ...b, ...updatedBoard } : b))
+      );
+      setActiveBoard((prev) => {
+        if (prev?.id === updatedBoard.id) {
+          return { ...prev, ...updatedBoard };
+        }
+        return prev;
+      });
+    };
+
+    const handleBoardDeleted = (data) => {
+      const boardId = data?.boardId || data?.id || data;
+      if (!boardId) return;
+      setBoards((prevBoards) => {
+        const remaining = prevBoards.filter((b) => b.id !== boardId);
+        setActiveBoard((prevActive) => {
+          if (prevActive?.id === boardId) {
+            return remaining[0] || null;
+          }
+          return prevActive;
+        });
+        return remaining;
+      });
+    };
+
+    socketService.on(SOCKET_EVENTS.BOARD_CREATED, handleBoardCreated);
+    socketService.on(SOCKET_EVENTS.BOARD_UPDATED, handleBoardUpdated);
+    socketService.on(SOCKET_EVENTS.BOARD_DELETED, handleBoardDeleted);
+
+    return () => {
+      socketService.off(SOCKET_EVENTS.BOARD_CREATED, handleBoardCreated);
+      socketService.off(SOCKET_EVENTS.BOARD_UPDATED, handleBoardUpdated);
+      socketService.off(SOCKET_EVENTS.BOARD_DELETED, handleBoardDeleted);
+    };
+  }, [isAuthenticated]);
+
+  // Socket.IO real-time task synchronization
   useEffect(() => {
     if (!isAuthenticated || !activeBoard?.id) return;
 
@@ -271,15 +322,6 @@ export const TaskProvider = ({ children }) => {
       );
     };
 
-    const handleBoardUpdated = (updatedBoard) => {
-      if (!updatedBoard?.id) return;
-      setBoards((prev) =>
-        prev.map((b) => (b.id === updatedBoard.id ? { ...b, ...updatedBoard } : b))
-      );
-      if (activeBoard?.id === updatedBoard.id) {
-        setActiveBoard((prev) => ({ ...prev, ...updatedBoard }));
-      }
-    };
 
     socketService.on(SOCKET_EVENTS.TASK_CREATED, handleTaskCreated);
     socketService.on(SOCKET_EVENTS.TASK_UPDATED, handleTaskUpdated);
@@ -287,8 +329,6 @@ export const TaskProvider = ({ children }) => {
     socketService.on(SOCKET_EVENTS.TASK_ASSIGNED, handleTaskUpdated);
     socketService.on(SOCKET_EVENTS.TASK_COMMENTED, handleTaskCommented);
     socketService.on(SOCKET_EVENTS.TASK_DELETED, handleTaskDeleted);
-    socketService.on(SOCKET_EVENTS.BOARD_UPDATED, handleBoardUpdated);
-
     return () => {
       socketService.off(SOCKET_EVENTS.TASK_CREATED, handleTaskCreated);
       socketService.off(SOCKET_EVENTS.TASK_UPDATED, handleTaskUpdated);
@@ -296,7 +336,6 @@ export const TaskProvider = ({ children }) => {
       socketService.off(SOCKET_EVENTS.TASK_ASSIGNED, handleTaskUpdated);
       socketService.off(SOCKET_EVENTS.TASK_COMMENTED, handleTaskCommented);
       socketService.off(SOCKET_EVENTS.TASK_DELETED, handleTaskDeleted);
-      socketService.off(SOCKET_EVENTS.BOARD_UPDATED, handleBoardUpdated);
       socketService.leaveBoard(activeBoard.id);
     };
   }, [isAuthenticated, activeBoard?.id]);
