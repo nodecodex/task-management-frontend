@@ -3,7 +3,7 @@ import { Spinner } from "reactstrap";
 import { Icon, UserAvatar, Button } from "@/components/Component";
 import { useAuth } from "@/context/AuthContext";
 import { commentsApi } from "@/api/comments.api";
-import { findUpper } from "@/utils/Utils";
+import { relativeTime, getName, getInitial, canDeleteComment } from "@/utils/Utils";
 import { toast } from "react-toastify";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
@@ -15,33 +15,7 @@ const SUGGESTIONS = [
   "Ready for review",
 ];
 
-/* ── Relative time helper ── */
-const relativeTime = (iso) => {
-  if (!iso) return "just now";
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 5) return "just now";
-  if (diff < 60) return `${diff} seconds ago`;
-  const m = Math.floor(diff / 60);
-  if (m < 60) return `${m} minute${m > 1 ? "s" : ""} ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h} hour${h > 1 ? "s" : ""} ago`;
-  const d = Math.floor(h / 24);
-  if (d < 7) return `${d} day${d > 1 ? "s" : ""} ago`;
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-};
 
-/* ── User helpers ── */
-const getName = (c) =>
-  c?.user?.name || c?.user?.fullName || c?.userName || "Team Member";
-
-const getInitial = (name) => findUpper(name || "U");
-
-const canDelete = (currentUser, c) => {
-  if (!currentUser || !c) return false;
-  if (["ADMIN", "admin"].includes(currentUser.role)) return true;
-  const uid = c.userId || c.user_id || c.user?.id;
-  return String(currentUser.id) === String(uid);
-};
 
 /* ════════════════════════════════════════════════
    CommentSection
@@ -353,7 +327,7 @@ const CommentSection = ({ taskId, className = "" }) => {
                     </div>
 
                     {/* Delete — only for owner/admin */}
-                    {canDelete(currentUser, c) && (
+                    {canDeleteComment(currentUser, c) && (
                       <div className="block shrink-0">
                         <Button type="button" title="Delete" color="light" style={{ padding: '2px 6px', height: '24px', lineHeight: '20px', margin: 0 }}
                           onClick={() => setDeleteCommentModal({ isOpen: true, commentId: cId, loading: false })}
