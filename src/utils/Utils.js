@@ -248,3 +248,31 @@ export const canDeleteTask = (currentUser, task) => {
 
   return Boolean(creatorId && String(creatorId) === currentUserId);
 };
+
+/* ── Relative time helper ── */
+export const relativeTime = (iso) => {
+  if (!iso) return "just now";
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 5) return "just now";
+  if (diff < 60) return `${diff} seconds ago`;
+  const m = Math.floor(diff / 60);
+  if (m < 60) return `${m} minute${m > 1 ? "s" : ""} ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} hour${h > 1 ? "s" : ""} ago`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d} day${d > 1 ? "s" : ""} ago`;
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+};
+
+/* ── User helpers ── */
+export const getName = (c) =>
+  c?.user?.name || c?.user?.fullName || c?.userName || "Team Member";
+
+export const getInitial = (name) => findUpper(name || "U");
+
+export const canDeleteComment = (currentUser, c) => {
+  if (!currentUser || !c) return false;
+  if (["ADMIN", "admin"].includes(currentUser.role)) return true;
+  const uid = c.userId || c.user_id || c.user?.id;
+  return String(currentUser.id) === String(uid);
+};
